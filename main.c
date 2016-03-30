@@ -18,6 +18,8 @@
 #include "ezdsp5535_sar.h"
 #include "print_number.h"
 #include "math.h"
+#include "string.h"
+#include "stdlib.h"
 
 #include "iir.h"
 #include "processing.h"
@@ -36,6 +38,27 @@ short tempBuff[128];
 
 void main( void )
 {   
+	Int16 d[AUDIO_IO_SIZE] = { 10000 };
+	Int16 z_x2[2], z_y2[2];
+	Int16 z_x3[3], z_y3[3];
+
+	Int16 shelving_lpp1[AUDIO_IO_SIZE];
+	Int16 shelving_lpm1[AUDIO_IO_SIZE];
+	Int16 shelving_hpp1[AUDIO_IO_SIZE];
+	Int16 shelving_hpm1[AUDIO_IO_SIZE];
+
+	Int16 peek_p1[AUDIO_IO_SIZE];
+	Int16 peek_m1[AUDIO_IO_SIZE];
+
+	Int16 shelving_coeff_lp[4];
+	Int16 shelving_coeff_hp[4];
+	Int16 peek_coeff[6];
+
+	calculateShelvingCoeff(0.3, shelving_coeff_lp);
+	calculateShelvingCoeff(-0.3, shelving_coeff_hp);
+	calculatePeekCoeff(0.7, 0, peek_coeff);
+
+
     /* Inicijalizaija razvojne ploce */
     EZDSP5535_init( );
 
@@ -60,14 +83,35 @@ void main( void )
 
     while(1)
     {
-    	aic3204_read_block(sampleBufferL, sampleBufferR);
+    	memset(z_x2, 0, sizeof(z_x2));
+    	memset(z_y2, 0, sizeof(z_y2));
+    	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_lpp1);
 
-    	/* Your code here */
+    	memset(z_x2, 0, sizeof(z_x2));
+    	memset(z_y2, 0, sizeof(z_y2));
+    	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, -1, shelving_lpm1);
 
-		aic3204_write_block(sampleBufferR, sampleBufferR);
+    	memset(z_x2, 0, sizeof(z_x2));
+    	memset(z_y2, 0, sizeof(z_y2));
+    	shelvingHP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_hpp1);
+
+    	memset(z_x2, 0, sizeof(z_x2));
+    	memset(z_y2, 0, sizeof(z_y2));
+    	shelvingHP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, -1, shelving_hpm1);
+
+    	memset(z_x3, 0, sizeof(z_x3));
+    	memset(z_y3, 0, sizeof(z_y3));
+    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, 1, peek_p1);
+
+    	memset(z_x3, 0, sizeof(z_x3));
+    	memset(z_y3, 0, sizeof(z_y3));
+    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, -1, peek_m1);
+    	/*aic3204_read_block(sampleBufferL, sampleBufferR);
+
+		aic3204_write_block(sampleBufferR, sampleBufferR);*/
 	}
 
-    	
+
 	/* Prekid veze sa AIC3204 kodekom */
     aic3204_disable();
 

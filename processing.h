@@ -23,4 +23,6 @@ void shelvingLP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 
 void shelvingPeek(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int16 k, Int16* output);
 
+void equalize(Int16* input, int kBass, int kTreble, int kMid1, int kMid2, Int16* output);
+
 #endif /* EQ_PROCESSING_H_ */
