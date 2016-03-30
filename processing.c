@@ -1,8 +1,12 @@
 #include "processing.h"
 #include "iir.h"
 #include <math.h>
+#include <stdlib.h>
 
 #define FLT 32767
+
+float aLP, aHP, aP1, aP2, bP1, bP2;
+
 
 void calculateShelvingCoeff(float alpha, Int16* output)
 {
@@ -62,7 +66,54 @@ void shelvingPeek(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, I
 	}
 }
 
-void equalize(Int16* input, int kBass, int kTreble, int kMid1, int kMid2, Int16* output)
+void setAlphaBeta(float OmegaLP, float OmegaHP, float OmegaP1, float BOmegaP1, float OmegaP2, float BOmegaP2)
 {
+	aLP = 1/cos(OmegaLP) + tan(OmegaLP);
+	aHP = 1/cos(OmegaHP) + tan(OmegaHP);
 
+	aP1 = 1/cos(BOmegaP1) + tan(BOmegaP1);
+	bP1 = cos(OmegaP1);
+
+	aP2 = 1/cos(BOmegaP2) + tan(BOmegaP2);
+	bP2 = cos(OmegaP2);
+}
+
+void equalize(Int16* input, Int16 n, int kBass, int kTreble, int kMid1, int kMid2, Int16* output)
+{
+	Int16 coeff_lp[4];
+	Int16 coeff_hp[4];
+	Int16 coeff_m1[6];
+	Int16 coeff_m2[6];
+
+	Int16 z_x2[2], z_y2[2];
+	Int16 z_x3[3], z_y3[3];
+
+	Int16 tmp1 = (Int16*)malloc(n * sizeof(Int16));
+	Int16 tmp2 = (Int16*)malloc(n * sizeof(Int16));
+	if (tmp1 == NULL)
+	{
+		printf("tmp1 NULL!");
+		return;
+	}
+	if (tmp2 == NULL)
+	{
+		printf("tmp2 NULL!");
+		return;
+	}
+
+	calculateShelvingCoeff(aLP, coeff_lp);
+	calculateShelvingCoeff(aHP, coeff_hp);
+	calculatePeekCoeff(aP1, bP1, coeff_m1);
+	calculatePeekCoeff(aP2, bP2, coeff_m2);
+
+	shelvingLP(input, coeff_lp, z_x2, z_y2, n, kBass, tmp1);
+	shelvingPeek(tmp1, coeff_m1, z_x3, z_y3, n, kMid1, tmp2);
+
+	memset(z_x2, 0, sizeof(z_x2));
+	memset(z_y2, 0, sizeof(z_y2));
+	memset(z_x3, 0, sizeof(z_x3));
+	memset(z_y3, 0, sizeof(z_y3));
+
+	shelvingPeek(tmp2, coeff_m2, z_x3, z_y3, n, kMid2, tmp1);
+	shelvingHP(tmp1, coeff_m2, z_x2, z_y2, n, kTreble, output);
 }
