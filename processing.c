@@ -40,7 +40,8 @@ void shelvingHP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 	for (i = 0; i < n; i++)
 	{
 		Int16 tmp = first_order_IIR(input[i], coeff, z_x, z_y);
-		output[i] = ((input[i] - tmp) >> 1) + ((input[i] + tmp) >> (1 - k));
+		Int16 tmp2 = input[i] + tmp;
+		output[i] = ((input[i] - tmp) >> 1) + (k > 0? tmp2 << (k - 1) : tmp2 >> (k + 1));
 	}
 }
 
@@ -51,7 +52,8 @@ void shelvingLP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 	for (i = 0; i < n; i++)
 	{
 		Int16 tmp = first_order_IIR(input[i], coeff, z_x, z_y);
-		output[i] = ((input[i] - tmp) >> (1 - k)) + ((input[i] + tmp) >> 1);
+		Int16 tmp2 = input[i] - tmp;
+		output[i] = (k > 0? tmp2 << (k - 1) : tmp2 >> (k + 1)) + ((input[i] + tmp) >> 1);
 	}
 }
 
@@ -62,7 +64,8 @@ void shelvingPeek(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, I
 	for (i = 0; i < n; i++)
 	{
 		Int16 tmp = second_order_IIR(input[i], coeff, z_x, z_y);
-		output[i] = ((input[i] + tmp) >> 1) + ((input[i] - tmp) >> (1 - k));
+		Int16 tmp2 = input[i] - tmp;
+		output[i] = ((input[i] + tmp) >> 1) + (k > 0? tmp2 << (k - 1) : tmp2 >> (k + 1));
 	}
 }
 
@@ -88,32 +91,28 @@ void equalize(Int16* input, Int16 n, int kBass, int kTreble, int kMid1, int kMid
 	Int16 z_x2[2], z_y2[2];
 	Int16 z_x3[3], z_y3[3];
 
-	Int16 tmp1 = (Int16*)malloc(n * sizeof(Int16));
-	Int16 tmp2 = (Int16*)malloc(n * sizeof(Int16));
-	if (tmp1 == NULL)
+	Int16 tmp = (Int16*)malloc(n * sizeof(Int16));
+
+	if (tmp == NULL)
 	{
 		printf("tmp1 NULL!");
 		return;
 	}
-	if (tmp2 == NULL)
-	{
-		printf("tmp2 NULL!");
-		return;
-	}
+
 
 	calculateShelvingCoeff(aLP, coeff_lp);
 	calculateShelvingCoeff(aHP, coeff_hp);
 	calculatePeekCoeff(aP1, bP1, coeff_m1);
 	calculatePeekCoeff(aP2, bP2, coeff_m2);
 
-	shelvingLP(input, coeff_lp, z_x2, z_y2, n, kBass, tmp1);
-	shelvingPeek(tmp1, coeff_m1, z_x3, z_y3, n, kMid1, tmp2);
+	shelvingLP(input, coeff_lp, z_x2, z_y2, n, kBass, tmp);
+	shelvingPeek(tmp, coeff_m1, z_x3, z_y3, n, kMid1, output);
 
 	memset(z_x2, 0, sizeof(z_x2));
 	memset(z_y2, 0, sizeof(z_y2));
 	memset(z_x3, 0, sizeof(z_x3));
 	memset(z_y3, 0, sizeof(z_y3));
 
-	shelvingPeek(tmp2, coeff_m2, z_x3, z_y3, n, kMid2, tmp1);
-	shelvingHP(tmp1, coeff_m2, z_x2, z_y2, n, kTreble, output);
+	shelvingPeek(output, coeff_m2, z_x3, z_y3, n, kMid2, tmp);
+	shelvingHP(tmp, coeff_m2, z_x2, z_y2, n, kTreble, output);
 }
