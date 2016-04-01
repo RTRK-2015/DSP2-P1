@@ -19,4 +19,7 @@ void printNumber(Int16 x);
 /* Stampanje karaktera sa telefonske tastature */
 void printChar(char x);
 
+void printUp(const char *str);
+void printDown(const char *str);
+
 #endif /* DTMF_PREDAJNIK_PRINT_NUMBER_H_ */

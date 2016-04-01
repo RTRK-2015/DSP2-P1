@@ -38,6 +38,13 @@ short tempBuff[128];
 
 void main( void )
 {   
+	int i;
+	int k[4] = { 0 };
+	int select = 0;
+
+	Uint16 current = NoKey, last = NoKey;
+
+
 	Int16 d[AUDIO_IO_SIZE] = { 10000 };
 	Int16 z_x2[2], z_y2[2];
 	Int16 z_x3[3], z_y3[3];
@@ -81,9 +88,17 @@ void main( void )
     /* Postavljanje vrednosti frekvencije odabiranja i pojacanja na kodeku */
     set_sampling_frequency_and_gain(SAMPLE_RATE, 0);
 
+    setAlphaBeta(0, 0, 0, 0, 0, 0);
+
+    /*EZDSP5535_OSD9616_printLetter(0x00,0x08,0x08,0x00);
+    EZDSP5535_OSD9616_printLetter(0xff,0x81,0x81,0xff);
+    EZDSP5535_OSD9616_printLetter(0x00,0xbf,0x00,0x00);*/
+    printUp("-0");
+    printDown("ii");
+
     while(1)
     {
-    	memset(z_x2, 0, sizeof(z_x2));
+    	/*memset(z_x2, 0, sizeof(z_x2));
     	memset(z_y2, 0, sizeof(z_y2));
     	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_lpp1);
 
@@ -105,10 +120,26 @@ void main( void )
 
     	memset(z_x3, 0, sizeof(z_x3));
     	memset(z_y3, 0, sizeof(z_y3));
-    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, -1, peek_m1);
-    	/*aic3204_read_block(sampleBufferL, sampleBufferR);
+    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, -1, peek_m1);*/
 
-		aic3204_write_block(sampleBufferR, sampleBufferR);*/
+    	//aic3204_read_block(sampleBufferL, sampleBufferR);
+
+    	current = EZDSP5535_SAR_getKey();
+
+    	if (current != last)
+    	{
+    		if (current == SW1)
+    			select = (select + 1) % 4;
+    		else if (current == SW2)
+    			k[select] = (k[select] + 1) % 5;
+
+    		last = current;
+    	}
+
+    	equalize(d, AUDIO_IO_SIZE, k, shelving_lpp1);
+    	//equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);
+
+		//aic3204_write_block(sampleBufferR, sampleBufferR);
 	}
 
 
