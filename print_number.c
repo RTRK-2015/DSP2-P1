@@ -129,6 +129,7 @@ void printChar(char x)
     EZDSP5535_OSD9616_send(0x00,0x10);
     EZDSP5535_OSD9616_send(0x00,0xb0+0);
 
+
 	if(index >= 0)
 	{
 		for(i = 0; i < sign_width; i++)
@@ -145,8 +146,99 @@ void printChar(char x)
     	    EZDSP5535_OSD9616_send(0x40, 0xFF);
     	}
     	EZDSP5535_OSD9616_send(0x40, 0x00);
-
     }
-
 }
 
+
+void truePrint(const char *str)
+{
+	int i;
+	for (i = 0; i < 22 && *str; ++i, ++str)
+	{
+		switch (*str)
+		{
+		case 'T':
+			break;
+
+		case 'r':
+			break;
+
+		case 'e':
+			break;
+
+		case 'b':
+			break;
+
+		case 'l':
+			break;
+
+		case 'B':
+			break;
+
+		case 'a':
+			break;
+
+		case 's':
+			break;
+
+		case 'M':
+			break;
+
+		case 'i':
+			EZDSP5535_OSD9616_printLetter(0x00,0x5f,0x00,0x00);
+			break;
+
+		case 'd':
+			break;
+
+		case '0':
+			EZDSP5535_OSD9616_printLetter(0x7f,0x41,0x41,0x7f);
+			break;
+
+		case '1':
+			break;
+
+		case '2':
+			break;
+
+		case '-':
+			EZDSP5535_OSD9616_printLetter(0x00,0x08,0x08,0x00);
+			break;
+
+		case ' ':
+			EZDSP5535_OSD9616_printLetter(0x00,0x00,0x00,0x00);
+			break;
+		}
+	}
+}
+
+
+void printUp(const char *str)
+{
+	int i;
+
+    /* Write to page 0 */
+    EZDSP5535_OSD9616_send(0x00,0x00);   // Set low column address
+    EZDSP5535_OSD9616_send(0x00,0x10);   // Set high column address
+    EZDSP5535_OSD9616_send(0x00,0xb1); // Set page for page 0 to page 5
+    for(i=0;i<128;i++)
+    	EZDSP5535_OSD9616_send(0x40,0x00);  // Spaces
+
+
+	truePrint(str);
+}
+
+
+void printDown(const char *str)
+{
+	int i;
+
+	EZDSP5535_OSD9616_send(0x00,0x00);   // Set low column address
+	EZDSP5535_OSD9616_send(0x00,0x10);   // Set high column address
+	EZDSP5535_OSD9616_send(0x00,0xb0); // Set page for page 0 to page 5
+
+	for(i=0;i<128;i++)
+		EZDSP5535_OSD9616_send(0x40,0x00);  // Spaces
+
+	truePrint(str);
+}
