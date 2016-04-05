@@ -25,7 +25,7 @@
 #include "processing.h"
 
 /* Frekvencija odabiranja */
-#define SAMPLE_RATE 8000L
+#define SAMPLE_RATE 16000L
 
 #define PI 3.14159265
 
@@ -38,7 +38,6 @@ short tempBuff[128];
 
 void main( void )
 {   
-	int i;
 	int k[4] = { 0 };
 	int select = 0;
 
@@ -46,7 +45,8 @@ void main( void )
 
 
 	Int16 d[AUDIO_IO_SIZE] = { 10000 };
-	Int16 z_x2[2], z_y2[2];
+	Int16 o[AUDIO_IO_SIZE] = { 0 };
+	/*Int16 z_x2[2], z_y2[2];
 	Int16 z_x3[3], z_y3[3];
 
 	Int16 shelving_lpp1[AUDIO_IO_SIZE];
@@ -63,7 +63,7 @@ void main( void )
 
 	calculateShelvingCoeff(0.3, shelving_coeff_lp);
 	calculateShelvingCoeff(-0.3, shelving_coeff_hp);
-	calculatePeekCoeff(0.7, 0, peek_coeff);
+	calculatePeekCoeff(0.7, 0, peek_coeff);*/
 
 
     /* Inicijalizaija razvojne ploce */
@@ -88,16 +88,21 @@ void main( void )
     /* Postavljanje vrednosti frekvencije odabiranja i pojacanja na kodeku */
     set_sampling_frequency_and_gain(SAMPLE_RATE, 0);
 
-    setAlphaBeta(0, 0, 0, 0, 0, 0);
 
-    /*EZDSP5535_OSD9616_printLetter(0x00,0x08,0x08,0x00);
-    EZDSP5535_OSD9616_printLetter(0xff,0x81,0x81,0xff);
-    EZDSP5535_OSD9616_printLetter(0x00,0xbf,0x00,0x00);*/
-    printUp("-0");
-    printDown("ii");
+    setAlphaBeta(/* Bass */ 220.0 / SAMPLE_RATE * 2 * PI,
+    		     /* Treble */ 6000.0 / SAMPLE_RATE * 2 * PI,
+				 /* Mid 1 */ 630.0 / SAMPLE_RATE * 2 * PI,
+				 /* Mid 1*/ 330.0 / SAMPLE_RATE * 2 * PI,
+				 /* Mid 2 */ 3300.0 / SAMPLE_RATE * 2 * PI,
+				 /* Mid 2*/ 2200.0 / SAMPLE_RATE * 2 * PI);
+
+    printUp("Bass");
+    printDown("-2");
 
     while(1)
     {
+    	int ks[] = { 4, 0, 0, 4 };
+
     	/*memset(z_x2, 0, sizeof(z_x2));
     	memset(z_y2, 0, sizeof(z_y2));
     	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_lpp1);
@@ -129,17 +134,34 @@ void main( void )
     	if (current != last)
     	{
     		if (current == SW1)
+    		{
     			select = (select + 1) % 4;
+    			printUp(select == 0? "Bass" :
+    			        select == 1? "Mid 1" :
+    			        select == 2? "Mid 2" :
+    			        			"Treble");
+    		}
     		else if (current == SW2)
+    		{
     			k[select] = (k[select] + 1) % 5;
+    		}
 
     		last = current;
+
+
+        	printDown(k[select] == 0? "-2" :
+        			  k[select] == 1? "-1" :
+        			  k[select] == 2? "0" :
+        			  k[select] == 3? "1" :
+        			  "2");
     	}
 
-    	equalize(d, AUDIO_IO_SIZE, k, shelving_lpp1);
-    	//equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);
 
-		//aic3204_write_block(sampleBufferR, sampleBufferR);
+    	equalize(d, AUDIO_IO_SIZE, ks, o);
+    	/*equalize(sampleBufferL, AUDIO_IO_SIZE, k, sampleBufferL);
+    	equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);
+
+		aic3204_write_block(sampleBufferR, sampleBufferR);*/
 	}
 
 
