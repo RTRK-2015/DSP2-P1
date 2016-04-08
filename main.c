@@ -41,7 +41,7 @@ void main( void )
 	int k[4] = { 0 };
 	int select = 0;
 
-	int ks[] = { 3, 0, 4, 2 };
+	int ks[] = { 1, 3, 1, 2 };
 	Int16 d[AUDIO_IO_SIZE] = { 10000 };
 	Int16 o[AUDIO_IO_SIZE] = { 0 };
 

@@ -109,14 +109,21 @@ void equalize(Int16* input, Int16 n, int *k, Int16* output)
 	Int16 z_x2[2] = { 0 }, z_y2[2] = { 0 };
 	Int16 z_x3[3] = { 0 }, z_y3[3] = { 0 };
 
-	shelvingLP(input, coeff_lp, z_x2, z_y2, n, k[0] - 2, input);
-	shelvingPeek(input, coeff_m1, z_x3, z_y3, n, k[1] - 2, input);
+	Int16 *tmp = (Int16*)malloc(n * sizeof(Int16));
+	if (tmp == NULL)
+	{
+		printf("TMP NULL!");
+		return;
+	}
+
+	shelvingLP(input, coeff_lp, z_x2, z_y2, n, k[0] - 2, tmp);
+	shelvingPeek(tmp), coeff_m1, z_x3, z_y3, n, k[1] - 2, tmp);
 
 	memset(z_x2, 0, sizeof(z_x2));
 	memset(z_y2, 0, sizeof(z_y2));
 	memset(z_x3, 0, sizeof(z_x3));
 	memset(z_y3, 0, sizeof(z_y3));
 
-	shelvingPeek(input, coeff_m2, z_x3, z_y3, n, k[2] - 2, input);
-	shelvingHP(input, coeff_hp, z_x2, z_y2, n, k[3] - 2, output);
+	shelvingPeek(tmp, coeff_m2, z_x3, z_y3, n, k[2] - 2, tmp);
+	shelvingHP(tmp, coeff_hp, z_x2, z_y2, n, k[3] - 2, output);
 }
