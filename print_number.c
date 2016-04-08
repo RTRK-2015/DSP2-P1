@@ -162,31 +162,31 @@ void truePrint(const char *str)
 			break;
 
 		case 'r':
-			EZDSP5535_OSD9616_printLetter(0x10, 0x10, 0x10, 0x1f);
+			EZDSP5535_OSD9616_printLetter(0x1f, 0x10, 0x10, 0x10);
 			break;
 
 		case 'e':
-			EZDSP5535_OSD9616_printLetter(0x1d, 0x15, 0x15, 0x1f);
+			EZDSP5535_OSD9616_printLetter(0x1f, 0x15, 0x15, 0x1d);
 			break;
 
 		case 'b':
-			EZDSP5535_OSD9616_printLetter(0x0f, 0x09, 0x09, 0x7f);
+			EZDSP5535_OSD9616_printLetter(0x7f, 0x09, 0x09, 0x0f);
 			break;
 
 		case 'l':
-			EZDSP5535_OSD9616_printLetter(0x00, 0x00, 0x7f, 0x00);
+			EZDSP5535_OSD9616_printLetter(0x00, 0x7f, 0x00, 0x00);
 			break;
 
 		case 'B':
-			EZDSP5535_OSD9616_printLetter(0x66, 0x49, 0x49, 0x7f);
+			EZDSP5535_OSD9616_printLetter(0x7f, 0x49, 0x49, 0x7f);
 			break;
 
 		case 'a':
-			EZDSP5535_OSD9616_printLetter(0x1f, 0x15, 0x15, 0x17);
+			EZDSP5535_OSD9616_printLetter(0x17, 0x15, 0x15, 0x1f);
 			break;
 
 		case 's':
-			EZDSP5535_OSD9616_printLetter(0x17, 0x15, 0x15, 0x1d);
+			EZDSP5535_OSD9616_printLetter(0x1d, 0x15, 0x15, 0x17);
 			break;
 
 		case 'M':
@@ -198,7 +198,7 @@ void truePrint(const char *str)
 			break;
 
 		case 'd':
-			EZDSP5535_OSD9616_printLetter(0x7f, 0x09, 0x09, 0x0f);
+			EZDSP5535_OSD9616_printLetter(0x0f, 0x09, 0x09, 0x7f);
 			break;
 
 		case '0':
@@ -206,11 +206,11 @@ void truePrint(const char *str)
 			break;
 
 		case '1':
-			EZDSP5535_OSD9616_printLetter(0x7f, 0x00, 0x00, 0x00);
+			EZDSP5535_OSD9616_printLetter(0x40, 0x7f, 0x00, 0x00);
 			break;
 
 		case '2':
-			EZDSP5535_OSD9616_printLetter(0x79, 0x49, 0x49, 0x4f);
+			EZDSP5535_OSD9616_printLetter(0x4f, 0x49, 0x49, 0x79);
 			break;
 
 		case '-':

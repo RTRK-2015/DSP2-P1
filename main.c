@@ -41,29 +41,12 @@ void main( void )
 	int k[4] = { 0 };
 	int select = 0;
 
-	Uint16 current = NoKey, last = NoKey;
-
-
+	int ks[] = { 3, 0, 4, 2 };
 	Int16 d[AUDIO_IO_SIZE] = { 10000 };
 	Int16 o[AUDIO_IO_SIZE] = { 0 };
-	/*Int16 z_x2[2], z_y2[2];
-	Int16 z_x3[3], z_y3[3];
 
-	Int16 shelving_lpp1[AUDIO_IO_SIZE];
-	Int16 shelving_lpm1[AUDIO_IO_SIZE];
-	Int16 shelving_hpp1[AUDIO_IO_SIZE];
-	Int16 shelving_hpm1[AUDIO_IO_SIZE];
 
-	Int16 peek_p1[AUDIO_IO_SIZE];
-	Int16 peek_m1[AUDIO_IO_SIZE];
-
-	Int16 shelving_coeff_lp[4];
-	Int16 shelving_coeff_hp[4];
-	Int16 peek_coeff[6];
-
-	calculateShelvingCoeff(0.3, shelving_coeff_lp);
-	calculateShelvingCoeff(-0.3, shelving_coeff_hp);
-	calculatePeekCoeff(0.7, 0, peek_coeff);*/
+	Uint16 current = NoKey, last = NoKey;
 
 
     /* Inicijalizaija razvojne ploce */
@@ -90,44 +73,18 @@ void main( void )
 
 
     setAlphaBeta(/* Bass */ 220.0 / SAMPLE_RATE * 2 * PI,
-    		     /* Treble */ 6000.0 / SAMPLE_RATE * 2 * PI,
 				 /* Mid 1 */ 630.0 / SAMPLE_RATE * 2 * PI,
 				 /* Mid 1*/ 330.0 / SAMPLE_RATE * 2 * PI,
 				 /* Mid 2 */ 3300.0 / SAMPLE_RATE * 2 * PI,
-				 /* Mid 2*/ 2200.0 / SAMPLE_RATE * 2 * PI);
+				 /* Mid 2*/ 2200.0 / SAMPLE_RATE * 2 * PI,
+				 /* Treble */ 6000.0 / SAMPLE_RATE * 2 * PI);
 
     printUp("Bass");
     printDown("-2");
 
     while(1)
     {
-    	int ks[] = { 4, 0, 0, 4 };
-
-    	/*memset(z_x2, 0, sizeof(z_x2));
-    	memset(z_y2, 0, sizeof(z_y2));
-    	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_lpp1);
-
-    	memset(z_x2, 0, sizeof(z_x2));
-    	memset(z_y2, 0, sizeof(z_y2));
-    	shelvingLP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, -1, shelving_lpm1);
-
-    	memset(z_x2, 0, sizeof(z_x2));
-    	memset(z_y2, 0, sizeof(z_y2));
-    	shelvingHP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, 1, shelving_hpp1);
-
-    	memset(z_x2, 0, sizeof(z_x2));
-    	memset(z_y2, 0, sizeof(z_y2));
-    	shelvingHP(d, shelving_coeff_hp, z_x2, z_y2, AUDIO_IO_SIZE, -1, shelving_hpm1);
-
-    	memset(z_x3, 0, sizeof(z_x3));
-    	memset(z_y3, 0, sizeof(z_y3));
-    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, 1, peek_p1);
-
-    	memset(z_x3, 0, sizeof(z_x3));
-    	memset(z_y3, 0, sizeof(z_y3));
-    	shelvingPeek(d, peek_coeff, z_x3, z_y3, AUDIO_IO_SIZE, -1, peek_m1);*/
-
-    	//aic3204_read_block(sampleBufferL, sampleBufferR);
+    	aic3204_read_block(sampleBufferL, sampleBufferR);
 
     	current = EZDSP5535_SAR_getKey();
 
@@ -159,9 +116,9 @@ void main( void )
 
     	equalize(d, AUDIO_IO_SIZE, ks, o);
     	/*equalize(sampleBufferL, AUDIO_IO_SIZE, k, sampleBufferL);
-    	equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);
+    	equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);*/
 
-		aic3204_write_block(sampleBufferR, sampleBufferR);*/
+		aic3204_write_block(sampleBufferR, sampleBufferR);
 	}
 
 
@@ -171,5 +128,3 @@ void main( void )
     printf( "\n***Kraj programa***\n" );
 	SW_BREAKPOINT;
 }
-
-

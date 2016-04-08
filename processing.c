@@ -51,6 +51,7 @@ void shelvingHP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 		Int16 tmp3 = input[i];
 		Int16 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
 		Int16 tmp2 = tmp3 + tmp;
+
 		output[i] = ((tmp3 - tmp) >> 1)  +  (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k));
 	}
 }
@@ -65,6 +66,7 @@ void shelvingLP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 		Int16 tmp3 = input[i];
 		Int16 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
 		Int16 tmp2 = tmp3 - tmp;
+
 		output[i] = (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k))  +  ((tmp3 + tmp) >> 1);
 	}
 }
@@ -84,12 +86,21 @@ void shelvingPeek(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, I
 }
 
 
-void setAlphaBeta(float OmegaLP, float OmegaHP, float OmegaP1, float BOmegaP1, float OmegaP2, float BOmegaP2)
+float calculateAlpha(float omega)
 {
-	calculateShelvingCoeff(1/cos(OmegaLP) + tan(OmegaLP), coeff_lp);
-	calculateShelvingCoeff(1/cos(OmegaHP) + tan(OmegaHP), coeff_hp);
-	calculatePeekCoeff(1/cos(BOmegaP1) + tan(BOmegaP1), cos(OmegaP1), coeff_m1);
-	calculatePeekCoeff(1/cos(BOmegaP2) + tan(BOmegaP2), cos(OmegaP2), coeff_m2);
+	float a1 = 1/cos(omega) + tan(omega);
+	float a2 = 1/cos(omega) - tan(omega);
+
+	return (a1 >= -1 && a1 <= 1)? a1 : a2;
+}
+
+
+void setAlphaBeta(float OmegaLP, float OmegaP1, float BOmegaP1, float OmegaP2, float BOmegaP2, float OmegaHP)
+{
+	calculateShelvingCoeff(calculateAlpha(OmegaLP), coeff_lp);
+	calculateShelvingCoeff(calculateAlpha(OmegaHP), coeff_hp);
+	calculatePeekCoeff(calculateAlpha(BOmegaP1), cos(OmegaP1), coeff_m1);
+	calculatePeekCoeff(calculateAlpha(BOmegaP2), cos(OmegaP2), coeff_m2);
 }
 
 
