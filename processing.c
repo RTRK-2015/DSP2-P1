@@ -6,7 +6,7 @@
 #include <string.h>
 
 #define FLT 32767
-
+#define MIN(x, y) ((x) < (y)? (x) : (y))
 
 static Int16 coeff_lp[4];
 static Int16 coeff_hp[4];
@@ -48,11 +48,13 @@ void shelvingHP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 
 	for (i = 0; i < n; i++)
 	{
-		Int16 tmp3 = input[i];
-		Int16 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
-		Int16 tmp2 = tmp3 + tmp;
+		Int32 tmp3 = input[i];
+		Int32 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
+		Int32 tmp2 = tmp3 + tmp;
 
-		output[i] = ((tmp3 - tmp) >> 1)  +  (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k));
+		Int32 o = ((tmp3 - tmp) >> 1)  +  (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k));
+
+		output[i] = MIN(o, FLT);
 	}
 }
 
@@ -63,11 +65,13 @@ void shelvingLP(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, Int
 
 	for (i = 0; i < n; i++)
 	{
-		Int16 tmp3 = input[i];
-		Int16 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
-		Int16 tmp2 = tmp3 - tmp;
+		Int32 tmp3 = input[i];
+		Int32 tmp = first_order_IIR(tmp3, coeff, z_x, z_y);
+		Int32 tmp2 = tmp3 - tmp;
 
-		output[i] = (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k))  +  ((tmp3 + tmp) >> 1);
+		Int32 o = (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k))  +  ((tmp3 + tmp) >> 1);
+
+		output[i] = MIN(o, FLT);
 	}
 }
 
@@ -78,10 +82,13 @@ void shelvingPeek(Int16* input, Int16* coeff, Int16* z_x, Int16* z_y, Int16 n, I
 
 	for (i = 0; i < n; i++)
 	{
-		Int16 tmp3 = input[i];
-		Int16 tmp = second_order_IIR(tmp3, coeff, z_x, z_y);
-		Int16 tmp2 = tmp3 - tmp;
-		output[i] = ((tmp3 + tmp) >> 1)  +  (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k));
+		Int32 tmp3 = input[i];
+		Int32 tmp = second_order_IIR(tmp3, coeff, z_x, z_y);
+		Int32 tmp2 = tmp3 - tmp;
+
+		Int32 o = ((tmp3 + tmp) >> 1)  +  (k > 0? tmp2 << (k - 1) : tmp2 >> (1 - k));
+
+		output[i] = MIN(o, FLT);
 	}
 }
 
