@@ -124,7 +124,7 @@ void equalize(Int16* input, Int16 n, int *k, Int16* output)
 	}
 
 	shelvingLP(input, coeff_lp, z_x2, z_y2, n, k[0] - 2, tmp);
-	shelvingPeek(tmp), coeff_m1, z_x3, z_y3, n, k[1] - 2, tmp);
+	shelvingPeek(tmp, coeff_m1, z_x3, z_y3, n, k[1] - 2, tmp);
 
 	memset(z_x2, 0, sizeof(z_x2));
 	memset(z_y2, 0, sizeof(z_y2));

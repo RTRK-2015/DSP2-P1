@@ -41,9 +41,9 @@ void main( void )
 	int k[4] = { 0 };
 	int select = 0;
 
-	int ks[] = { 1, 3, 1, 2 };
+	/*int ks[] = { 1, 4, 2, 3 };
 	Int16 d[AUDIO_IO_SIZE] = { 10000 };
-	Int16 o[AUDIO_IO_SIZE] = { 0 };
+	Int16 o[AUDIO_IO_SIZE] = { 0 };*/
 
 
 	Uint16 current = NoKey, last = NoKey;
@@ -114,9 +114,9 @@ void main( void )
     	}
 
 
-    	equalize(d, AUDIO_IO_SIZE, ks, o);
-    	/*equalize(sampleBufferL, AUDIO_IO_SIZE, k, sampleBufferL);
-    	equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);*/
+    	//equalize(d, AUDIO_IO_SIZE, ks, o);
+    	equalize(sampleBufferL, AUDIO_IO_SIZE, k, sampleBufferL);
+    	equalize(sampleBufferR, AUDIO_IO_SIZE, k, sampleBufferR);
 
 		aic3204_write_block(sampleBufferR, sampleBufferR);
 	}
